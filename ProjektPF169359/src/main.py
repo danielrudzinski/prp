@@ -1,6 +1,3 @@
-"""
-main.py - Główny moduł systemu wypożyczalni pojazdów
-"""
 from datetime import date, timedelta
 import uuid
 
@@ -30,7 +27,7 @@ def main():
         vehicle_type=VehicleType.COMPACT,
         doors=5,
         fuel_type="Benzyna",
-        transmission="Manualna"
+        transmission="Manualna",
     )
     vehicle_inventory.add_vehicle(vehicle1)
     print(f"Dodano pojazd: {vehicle1}")
@@ -45,7 +42,7 @@ def main():
         vehicle_type=VehicleType.STANDARD,
         doors=5,
         fuel_type="Diesel",
-        transmission="Automatyczna"
+        transmission="Automatyczna",
     )
     vehicle_inventory.add_vehicle(vehicle2)
     print(f"Dodano pojazd: {vehicle2}")
@@ -60,7 +57,7 @@ def main():
         vehicle_type=VehicleType.PREMIUM,
         doors=5,
         fuel_type="Benzyna",
-        transmission="Automatyczna"
+        transmission="Automatyczna",
     )
     vehicle_inventory.add_vehicle(vehicle3)
     print(f"Dodano pojazd: {vehicle3}")
@@ -71,7 +68,7 @@ def main():
         license_number="ABC123456",
         issue_date=date(2015, 5, 15),
         expiry_date=date(2025, 5, 15),
-        categories=["B"]
+        categories=["B"],
     )
     customer1 = Customer(
         customer_id="CUST001",
@@ -80,7 +77,7 @@ def main():
         email="jan.kowalski@example.com",
         phone="123456789",
         address="ul. Przykładowa 1, Warszawa",
-        driving_license=license1
+        driving_license=license1,
     )
     customer_registry.register_customer(customer1)
     print(f"Zarejestrowano klienta: {customer1}")
@@ -89,7 +86,7 @@ def main():
         license_number="DEF789012",
         issue_date=date(2018, 6, 20),
         expiry_date=date(2028, 6, 20),
-        categories=["B", "C"]
+        categories=["B", "C"],
     )
     customer2 = Customer(
         customer_id="CUST002",
@@ -98,7 +95,7 @@ def main():
         email="anna.nowak@example.com",
         phone="987654321",
         address="ul. Kwiatowa 2, Kraków",
-        driving_license=license2
+        driving_license=license2,
     )
     customer_registry.register_customer(customer2)
     print(f"Zarejestrowano klienta: {customer2}")
@@ -117,7 +114,7 @@ def main():
             customer=customer1,
             vehicle=vehicle1,
             start_date=today,
-            end_date=today + timedelta(days=3)
+            end_date=today + timedelta(days=3),
         )
         print(f"Utworzono wypożyczenie: {rental1}")
     except Exception as e:
@@ -129,7 +126,7 @@ def main():
             customer=customer2,
             vehicle=vehicle2,
             start_date=today,
-            end_date=today + timedelta(days=5)
+            end_date=today + timedelta(days=5),
         )
         print(f"Utworzono wypożyczenie: {rental2}")
     except Exception as e:
@@ -137,9 +134,15 @@ def main():
 
     # Sprawdzanie statusu pojazdów
     print("\n[ Status pojazdów ]")
-    print(f"Pojazd {vehicle1.registration_number} jest dostępny: {vehicle1.is_available()}")
-    print(f"Pojazd {vehicle2.registration_number} jest dostępny: {vehicle2.is_available()}")
-    print(f"Pojazd {vehicle3.registration_number} jest dostępny: {vehicle3.is_available()}")
+    print(
+        f"Pojazd {vehicle1.registration_number} jest dostępny: {vehicle1.is_available()}"
+    )
+    print(
+        f"Pojazd {vehicle2.registration_number} jest dostępny: {vehicle2.is_available()}"
+    )
+    print(
+        f"Pojazd {vehicle3.registration_number} jest dostępny: {vehicle3.is_available()}"
+    )
 
     # Lista aktywnych wypożyczeń
     print("\n[ Aktywne wypożyczenia ]")
@@ -156,10 +159,12 @@ def main():
             rental_id=rental1.rental_id,
             rating=5,
             comment="Bardzo sprawna obsługa i wygodny samochód",
-            review_date=return_date
+            review_date=return_date,
         )
         print(f"Dodano opinię: {review}")
-        print(f"Zakończono wypożyczenie {rental1.rental_id}. Całkowity koszt: {total_cost} PLN")
+        print(
+            f"Zakończono wypożyczenie {rental1.rental_id}. Całkowity koszt: {total_cost} PLN"
+        )
     except Exception as e:
         print(f"Błąd podczas zwrotu pojazdu: {e}")
 
@@ -173,8 +178,12 @@ def main():
 
     # Sprawdzanie statusu pojazdów po zakończeniu/anulowaniu
     print("\n[ Status pojazdów po zwrocie/anulowaniu ]")
-    print(f"Pojazd {vehicle1.registration_number} jest dostępny: {vehicle1.is_available()}")
-    print(f"Pojazd {vehicle2.registration_number} jest dostępny: {vehicle2.is_available()}")
+    print(
+        f"Pojazd {vehicle1.registration_number} jest dostępny: {vehicle1.is_available()}"
+    )
+    print(
+        f"Pojazd {vehicle2.registration_number} jest dostępny: {vehicle2.is_available()}"
+    )
 
     # Generowanie raportu
     print("\n[ Raport wypożyczeń ]")
@@ -189,7 +198,9 @@ def main():
     print(f"Anulowane wypożyczenia: {report['cancelled_rentals']}")
     print(f"Przeterminowane wypożyczenia: {report['overdue_rentals']}")
     print(f"Łączny przychód: {report['total_revenue']} PLN")
-    print(f"Średni czas trwania wypożyczenia: {report['average_rental_duration']:.1f} dni")
+    print(
+        f"Średni czas trwania wypożyczenia: {report['average_rental_duration']:.1f} dni"
+    )
     print("\n[ Oceny klientów ]")
     for customer in [customer1, customer2]:
         avg = rental_manager.get_average_rating_for_customer(customer.customer_id)

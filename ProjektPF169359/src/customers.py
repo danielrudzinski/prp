@@ -1,6 +1,3 @@
-"""
-Moduł customers.py zarządza klientami wypożyczalni.
-"""
 from enum import Enum
 from typing import Optional, Dict, List
 from datetime import datetime, date
@@ -15,11 +12,11 @@ class CustomerCategory(Enum):
 
 class DrivingLicense:
     def __init__(
-            self,
-            license_number: str,
-            issue_date: date,
-            expiry_date: date,
-            categories: List[str]
+        self,
+        license_number: str,
+        issue_date: date,
+        expiry_date: date,
+        categories: List[str],
     ) -> None:
         if not license_number or not isinstance(license_number, str):
             raise ValueError("Numer prawa jazdy musi być niepustym stringiem")
@@ -29,7 +26,9 @@ class DrivingLicense:
             raise ValueError("Data ważności musi być instancją datetime.date")
         if issue_date > expiry_date:
             raise ValueError("Data wydania nie może być późniejsza niż data ważności")
-        if not isinstance(categories, list) or not all(isinstance(c, str) for c in categories):
+        if not isinstance(categories, list) or not all(
+            isinstance(c, str) for c in categories
+        ):
             raise ValueError("Kategorie muszą być listą stringów")
 
         self.license_number = license_number
@@ -54,14 +53,14 @@ class DrivingLicense:
 
 class Customer:
     def __init__(
-            self,
-            customer_id: str,
-            first_name: str,
-            last_name: str,
-            email: str,
-            phone: str,
-            address: str,
-            driving_license: DrivingLicense
+        self,
+        customer_id: str,
+        first_name: str,
+        last_name: str,
+        email: str,
+        phone: str,
+        address: str,
+        driving_license: DrivingLicense,
     ) -> None:
         if not customer_id or not isinstance(customer_id, str):
             raise ValueError("ID klienta musi być niepustym stringiem")
@@ -120,7 +119,9 @@ class CustomerRegistry:
             raise TypeError("Obiekt musi być instancją klasy Customer")
 
         if customer.customer_id in self.customers:
-            raise ValueError(f"Klient o ID {customer.customer_id} już istnieje w rejestrze")
+            raise ValueError(
+                f"Klient o ID {customer.customer_id} już istnieje w rejestrze"
+            )
         self.customers[customer.customer_id] = customer
 
     def remove_customer(self, customer_id: str) -> None:
@@ -141,7 +142,11 @@ class CustomerRegistry:
         if not last_name or not isinstance(last_name, str):
             raise ValueError("Nazwisko musi być niepustym stringiem")
 
-        return [c for c in self.customers.values() if c.last_name.lower() == last_name.lower()]
+        return [
+            c
+            for c in self.customers.values()
+            if c.last_name.lower() == last_name.lower()
+        ]
 
     def get_customers_by_category(self, category: CustomerCategory) -> List[Customer]:
         if not isinstance(category, CustomerCategory):

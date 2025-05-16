@@ -3,6 +3,7 @@ from unittest.mock import Mock, patch
 from datetime import date
 from src.vehicles import Vehicle, Car, VehicleInventory, VehicleType, VehicleStatus
 
+
 class TestVehicle(unittest.TestCase):
 
     def setUp(self):
@@ -14,7 +15,7 @@ class TestVehicle(unittest.TestCase):
             year=2020,
             registration_number="WA12345",
             daily_rate=150.0,
-            vehicle_type=VehicleType.COMPACT
+            vehicle_type=VehicleType.COMPACT,
         )
 
     def test_vehicle_initialization(self):
@@ -86,25 +87,57 @@ class TestVehicle(unittest.TestCase):
     def test_vehicle_initialization_invalid_data(self):
         """Test inicjalizacji pojazdu z niepoprawnymi danymi"""
         with self.assertRaises(ValueError):
-            Vehicle("", "Toyota", "Corolla", 2020, "WA12345", 150.0, VehicleType.COMPACT)
+            Vehicle(
+                "", "Toyota", "Corolla", 2020, "WA12345", 150.0, VehicleType.COMPACT
+            )
 
         with self.assertRaises(ValueError):
-            Vehicle("TEST001", "", "Corolla", 2020, "WA12345", 150.0, VehicleType.COMPACT)
+            Vehicle(
+                "TEST001", "", "Corolla", 2020, "WA12345", 150.0, VehicleType.COMPACT
+            )
 
         with self.assertRaises(ValueError):
-            Vehicle("TEST001", "Toyota", "", 2020, "WA12345", 150.0, VehicleType.COMPACT)
+            Vehicle(
+                "TEST001", "Toyota", "", 2020, "WA12345", 150.0, VehicleType.COMPACT
+            )
 
         with self.assertRaises(ValueError):
-            Vehicle("TEST001", "Toyota", "Corolla", 1800, "WA12345", 150.0, VehicleType.COMPACT)
+            Vehicle(
+                "TEST001",
+                "Toyota",
+                "Corolla",
+                1800,
+                "WA12345",
+                150.0,
+                VehicleType.COMPACT,
+            )
 
         with self.assertRaises(ValueError):
-            Vehicle("TEST001", "Toyota", "Corolla", 2030, "WA12345", 150.0, VehicleType.COMPACT)
+            Vehicle(
+                "TEST001",
+                "Toyota",
+                "Corolla",
+                2030,
+                "WA12345",
+                150.0,
+                VehicleType.COMPACT,
+            )
 
         with self.assertRaises(ValueError):
-            Vehicle("TEST001", "Toyota", "Corolla", 2020, "", 150.0, VehicleType.COMPACT)
+            Vehicle(
+                "TEST001", "Toyota", "Corolla", 2020, "", 150.0, VehicleType.COMPACT
+            )
 
         with self.assertRaises(ValueError):
-            Vehicle("TEST001", "Toyota", "Corolla", 2020, "WA12345", -10.0, VehicleType.COMPACT)
+            Vehicle(
+                "TEST001",
+                "Toyota",
+                "Corolla",
+                2020,
+                "WA12345",
+                -10.0,
+                VehicleType.COMPACT,
+            )
 
         with self.assertRaises(ValueError):
             Vehicle("TEST001", "Toyota", "Corolla", 2020, "WA12345", 150.0, "compact")
@@ -125,7 +158,7 @@ class TestCar(unittest.TestCase):
             vehicle_type=VehicleType.COMPACT,
             doors=5,
             fuel_type="Benzyna",
-            transmission="Manualna"
+            transmission="Manualna",
         )
 
     def test_car_initialization(self):
@@ -150,20 +183,44 @@ class TestCar(unittest.TestCase):
         """Test inicjalizacji samochodu z niepoprawnymi danymi"""
         with self.assertRaises(ValueError):
             Car(
-                "CAR001", "Toyota", "Corolla", 2020, "WA12345", 150.0,
-                VehicleType.COMPACT, 0, "Benzyna", "Manualna"
+                "CAR001",
+                "Toyota",
+                "Corolla",
+                2020,
+                "WA12345",
+                150.0,
+                VehicleType.COMPACT,
+                0,
+                "Benzyna",
+                "Manualna",
             )
 
         with self.assertRaises(ValueError):
             Car(
-                "CAR001", "Toyota", "Corolla", 2020, "WA12345", 150.0,
-                VehicleType.COMPACT, 5, "", "Manualna"
+                "CAR001",
+                "Toyota",
+                "Corolla",
+                2020,
+                "WA12345",
+                150.0,
+                VehicleType.COMPACT,
+                5,
+                "",
+                "Manualna",
             )
 
         with self.assertRaises(ValueError):
             Car(
-                "CAR001", "Toyota", "Corolla", 2020, "WA12345", 150.0,
-                VehicleType.COMPACT, 5, "Benzyna", ""
+                "CAR001",
+                "Toyota",
+                "Corolla",
+                2020,
+                "WA12345",
+                150.0,
+                VehicleType.COMPACT,
+                5,
+                "Benzyna",
+                "",
             )
 
 
@@ -181,7 +238,7 @@ class TestVehicleInventory(unittest.TestCase):
             year=2020,
             registration_number="WA12345",
             daily_rate=150.0,
-            vehicle_type=VehicleType.COMPACT
+            vehicle_type=VehicleType.COMPACT,
         )
 
         self.vehicle2 = Vehicle(
@@ -191,7 +248,7 @@ class TestVehicleInventory(unittest.TestCase):
             year=2021,
             registration_number="WA54321",
             daily_rate=170.0,
-            vehicle_type=VehicleType.STANDARD
+            vehicle_type=VehicleType.STANDARD,
         )
 
         self.vehicle3 = Vehicle(
@@ -201,7 +258,7 @@ class TestVehicleInventory(unittest.TestCase):
             year=2022,
             registration_number="WA99999",
             daily_rate=350.0,
-            vehicle_type=VehicleType.PREMIUM
+            vehicle_type=VehicleType.PREMIUM,
         )
 
     def test_add_vehicle(self):
@@ -263,7 +320,6 @@ class TestVehicleInventory(unittest.TestCase):
         available = self.inventory.get_available_vehicles()
         self.assertEqual(len(available), 3)
 
-
         self.vehicle2.change_status(VehicleStatus.RENTED)
         available = self.inventory.get_available_vehicles()
         self.assertEqual(len(available), 2)
@@ -277,17 +333,22 @@ class TestVehicleInventory(unittest.TestCase):
         self.inventory.add_vehicle(self.vehicle2)  # STANDARD
         self.inventory.add_vehicle(self.vehicle3)  # PREMIUM
 
-        compact_vehicles = self.inventory.get_available_vehicles_by_type(VehicleType.COMPACT)
+        compact_vehicles = self.inventory.get_available_vehicles_by_type(
+            VehicleType.COMPACT
+        )
         self.assertEqual(len(compact_vehicles), 1)
         self.assertIn(self.vehicle1, compact_vehicles)
 
-        standard_vehicles = self.inventory.get_available_vehicles_by_type(VehicleType.STANDARD)
+        standard_vehicles = self.inventory.get_available_vehicles_by_type(
+            VehicleType.STANDARD
+        )
         self.assertEqual(len(standard_vehicles), 1)
         self.assertIn(self.vehicle2, standard_vehicles)
 
-
         self.vehicle3.change_status(VehicleStatus.MAINTENANCE)
-        premium_vehicles = self.inventory.get_available_vehicles_by_type(VehicleType.PREMIUM)
+        premium_vehicles = self.inventory.get_available_vehicles_by_type(
+            VehicleType.PREMIUM
+        )
         self.assertEqual(len(premium_vehicles), 0)
 
     def test_count_vehicles_by_status(self):
@@ -301,7 +362,6 @@ class TestVehicleInventory(unittest.TestCase):
         self.assertEqual(counts[VehicleStatus.RENTED], 0)
         self.assertEqual(counts[VehicleStatus.MAINTENANCE], 0)
         self.assertEqual(counts[VehicleStatus.OUT_OF_SERVICE], 0)
-
 
         self.vehicle1.change_status(VehicleStatus.RENTED)
         self.vehicle2.change_status(VehicleStatus.MAINTENANCE)
@@ -327,7 +387,6 @@ def test_change_status_multiple_times(self):
 
     self.assertEqual(self.vehicle.status, VehicleStatus.AVAILABLE)
 
-
     self.vehicle.change_status(VehicleStatus.RENTED)
     self.assertEqual(self.vehicle.status, VehicleStatus.RENTED)
 
@@ -355,7 +414,6 @@ def test_change_status_multiple_times(self):
 
     self.assertEqual(self.vehicle.status, VehicleStatus.AVAILABLE)
 
-
     self.vehicle.change_status(VehicleStatus.RENTED)
     self.assertEqual(self.vehicle.status, VehicleStatus.RENTED)
 
@@ -369,5 +427,5 @@ def test_change_status_multiple_times(self):
     self.assertEqual(self.vehicle.status, VehicleStatus.AVAILABLE)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

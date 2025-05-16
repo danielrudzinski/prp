@@ -1,7 +1,15 @@
 from datetime import date
 
+
 class Review:
-    def __init__(self, rental_id: str, customer_id: str, rating: int, comment: str, review_date: date):
+    def __init__(
+        self,
+        rental_id: str,
+        customer_id: str,
+        rating: int,
+        comment: str,
+        review_date: date,
+    ):
         if not (1 <= rating <= 5):
             raise ValueError("Ocena musi być w zakresie 1–5")
         if not rental_id or not customer_id:
@@ -23,4 +31,4 @@ class Review:
         return any(keyword.lower() in comment_lower for keyword in keywords)
 
     def __str__(self) -> str:
-        return f"[{self.review_date}] {self.customer_id}: {self.rating}/5 - \"{self.comment}\""
+        return f'[{self.review_date}] {self.customer_id}: {self.rating}/5 - "{self.comment}"'

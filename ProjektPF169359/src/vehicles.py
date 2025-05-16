@@ -1,6 +1,3 @@
-"""
-Moduł vehicles.py definiuje klasy pojazdów dostępnych w wypożyczalni.
-"""
 from enum import Enum
 from typing import Optional, List, Dict
 from datetime import date
@@ -24,14 +21,14 @@ class VehicleType(Enum):
 
 class Vehicle:
     def __init__(
-            self,
-            vehicle_id: str,
-            make: str,
-            model: str,
-            year: int,
-            registration_number: str,
-            daily_rate: float,
-            vehicle_type: VehicleType
+        self,
+        vehicle_id: str,
+        make: str,
+        model: str,
+        year: int,
+        registration_number: str,
+        daily_rate: float,
+        vehicle_type: VehicleType,
     ) -> None:
         if not vehicle_id or not isinstance(vehicle_id, str):
             raise ValueError("ID pojazdu musi być niepustym stringiem")
@@ -40,7 +37,9 @@ class Vehicle:
         if not model or not isinstance(model, str):
             raise ValueError("Model pojazdu musi być niepustym stringiem")
         if not isinstance(year, int) or year < 1900 or year > date.today().year + 1:
-            raise ValueError(f"Rok produkcji musi być liczbą całkowitą między 1900 a {date.today().year + 1}")
+            raise ValueError(
+                f"Rok produkcji musi być liczbą całkowitą między 1900 a {date.today().year + 1}"
+            )
         if not registration_number or not isinstance(registration_number, str):
             raise ValueError("Numer rejestracyjny musi być niepustym stringiem")
         if not isinstance(daily_rate, (int, float)) or daily_rate <= 0:
@@ -69,7 +68,9 @@ class Vehicle:
     def is_available(self) -> bool:
         return self.status == VehicleStatus.AVAILABLE
 
-    def add_maintenance_record(self, description: str, date_performed: date, cost: float) -> None:
+    def add_maintenance_record(
+        self, description: str, date_performed: date, cost: float
+    ) -> None:
         if not description or not isinstance(description, str):
             raise ValueError("Opis konserwacji musi być niepustym stringiem")
         if not isinstance(date_performed, date):
@@ -77,29 +78,27 @@ class Vehicle:
         if not isinstance(cost, (int, float)) or cost < 0:
             raise ValueError("Koszt musi być liczbą nieujemną")
 
-        record = {
-            "description": description,
-            "date": date_performed,
-            "cost": cost
-        }
+        record = {"description": description, "date": date_performed, "cost": cost}
         self.maintenance_history.append(record)
 
 
 class Car(Vehicle):
     def __init__(
-            self,
-            vehicle_id: str,
-            make: str,
-            model: str,
-            year: int,
-            registration_number: str,
-            daily_rate: float,
-            vehicle_type: VehicleType,
-            doors: int,
-            fuel_type: str,
-            transmission: str
+        self,
+        vehicle_id: str,
+        make: str,
+        model: str,
+        year: int,
+        registration_number: str,
+        daily_rate: float,
+        vehicle_type: VehicleType,
+        doors: int,
+        fuel_type: str,
+        transmission: str,
     ) -> None:
-        super().__init__(vehicle_id, make, model, year, registration_number, daily_rate, vehicle_type)
+        super().__init__(
+            vehicle_id, make, model, year, registration_number, daily_rate, vehicle_type
+        )
 
         if not isinstance(doors, int) or doors <= 0:
             raise ValueError("Liczba drzwi musi być dodatnią liczbą całkowitą")
@@ -126,7 +125,9 @@ class VehicleInventory:
             raise TypeError("Obiekt musi być instancją klasy Vehicle")
 
         if vehicle.vehicle_id in self.vehicles:
-            raise ValueError(f"Pojazd o ID {vehicle.vehicle_id} już istnieje w inwentarzu")
+            raise ValueError(
+                f"Pojazd o ID {vehicle.vehicle_id} już istnieje w inwentarzu"
+            )
         self.vehicles[vehicle.vehicle_id] = vehicle
 
     def remove_vehicle(self, vehicle_id: str) -> None:
@@ -146,12 +147,17 @@ class VehicleInventory:
     def get_available_vehicles(self) -> List[Vehicle]:
         return [v for v in self.vehicles.values() if v.is_available()]
 
-    def get_available_vehicles_by_type(self, vehicle_type: VehicleType) -> List[Vehicle]:
+    def get_available_vehicles_by_type(
+        self, vehicle_type: VehicleType
+    ) -> List[Vehicle]:
         if not isinstance(vehicle_type, VehicleType):
             raise ValueError("Typ pojazdu musi być instancją VehicleType")
 
-        return [v for v in self.vehicles.values()
-                if v.is_available() and v.vehicle_type == vehicle_type]
+        return [
+            v
+            for v in self.vehicles.values()
+            if v.is_available() and v.vehicle_type == vehicle_type
+        ]
 
     def count_vehicles_by_status(self) -> Dict[VehicleStatus, int]:
         counts = {status: 0 for status in VehicleStatus}

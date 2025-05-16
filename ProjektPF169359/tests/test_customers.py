@@ -3,6 +3,7 @@ from unittest.mock import Mock, patch
 from datetime import date, datetime, timedelta
 from src.customers import Customer, CustomerRegistry, CustomerCategory, DrivingLicense
 
+
 class TestDrivingLicense(unittest.TestCase):
 
     def setUp(self):
@@ -12,7 +13,7 @@ class TestDrivingLicense(unittest.TestCase):
             license_number="ABC123456",
             issue_date=self.today - timedelta(days=365),
             expiry_date=self.today + timedelta(days=365),
-            categories=["B", "C"]
+            categories=["B", "C"],
         )
 
     def test_license_initialization(self):
@@ -30,7 +31,9 @@ class TestDrivingLicense(unittest.TestCase):
 
         # Niepoprawny typ daty wydania
         with self.assertRaises(ValueError):
-            DrivingLicense("ABC123456", "niepoprawna_data", self.today + timedelta(days=365), ["B"])
+            DrivingLicense(
+                "ABC123456", "niepoprawna_data", self.today + timedelta(days=365), ["B"]
+            )
 
         # Niepoprawny typ daty ważności
         with self.assertRaises(ValueError):
@@ -38,15 +41,21 @@ class TestDrivingLicense(unittest.TestCase):
 
         # Data wydania późniejsza niż data ważności
         with self.assertRaises(ValueError):
-            DrivingLicense("ABC123456", self.today + timedelta(days=10), self.today, ["B"])
+            DrivingLicense(
+                "ABC123456", self.today + timedelta(days=10), self.today, ["B"]
+            )
 
         # Niepoprawny typ listy kategorii
         with self.assertRaises(ValueError):
-            DrivingLicense("ABC123456", self.today, self.today + timedelta(days=365), "B")
+            DrivingLicense(
+                "ABC123456", self.today, self.today + timedelta(days=365), "B"
+            )
 
         # Lista zawierająca elementy niebędące stringami
         with self.assertRaises(ValueError):
-            DrivingLicense("ABC123456", self.today, self.today + timedelta(days=365), ["B", 1])
+            DrivingLicense(
+                "ABC123456", self.today, self.today + timedelta(days=365), ["B", 1]
+            )
 
     def test_is_valid(self):
         """Test sprawdzania ważności prawa jazdy"""
@@ -89,7 +98,7 @@ class TestCustomer(unittest.TestCase):
             license_number="ABC123456",
             issue_date=self.today - timedelta(days=365),
             expiry_date=self.today + timedelta(days=365),
-            categories=["B", "C"]
+            categories=["B", "C"],
         )
         self.customer = Customer(
             customer_id="CUST001",
@@ -98,7 +107,7 @@ class TestCustomer(unittest.TestCase):
             email="jan.kowalski@example.com",
             phone="123456789",
             address="ul. Przykładowa 1, Warszawa",
-            driving_license=self.license
+            driving_license=self.license,
         )
 
     def test_customer_initialization(self):
@@ -118,38 +127,87 @@ class TestCustomer(unittest.TestCase):
         """Test inicjalizacji klienta z niepoprawnymi danymi"""
         # Pusty identyfikator klienta
         with self.assertRaises(ValueError):
-            Customer("", "Jan", "Kowalski", "jan.kowalski@example.com",
-                     "123456789", "ul. Przykładowa 1, Warszawa", self.license)
+            Customer(
+                "",
+                "Jan",
+                "Kowalski",
+                "jan.kowalski@example.com",
+                "123456789",
+                "ul. Przykładowa 1, Warszawa",
+                self.license,
+            )
 
         # Puste imię
         with self.assertRaises(ValueError):
-            Customer("CUST001", "", "Kowalski", "jan.kowalski@example.com",
-                     "123456789", "ul. Przykładowa 1, Warszawa", self.license)
+            Customer(
+                "CUST001",
+                "",
+                "Kowalski",
+                "jan.kowalski@example.com",
+                "123456789",
+                "ul. Przykładowa 1, Warszawa",
+                self.license,
+            )
 
         # Puste nazwisko
         with self.assertRaises(ValueError):
-            Customer("CUST001", "Jan", "", "jan.kowalski@example.com",
-                     "123456789", "ul. Przykładowa 1, Warszawa", self.license)
+            Customer(
+                "CUST001",
+                "Jan",
+                "",
+                "jan.kowalski@example.com",
+                "123456789",
+                "ul. Przykładowa 1, Warszawa",
+                self.license,
+            )
 
         # Pusty e-mail
         with self.assertRaises(ValueError):
-            Customer("CUST001", "Jan", "Kowalski", "",
-                     "123456789", "ul. Przykładowa 1, Warszawa", self.license)
+            Customer(
+                "CUST001",
+                "Jan",
+                "Kowalski",
+                "",
+                "123456789",
+                "ul. Przykładowa 1, Warszawa",
+                self.license,
+            )
 
         # Pusty numer telefonu
         with self.assertRaises(ValueError):
-            Customer("CUST001", "Jan", "Kowalski", "jan.kowalski@example.com",
-                     "", "ul. Przykładowa 1, Warszawa", self.license)
+            Customer(
+                "CUST001",
+                "Jan",
+                "Kowalski",
+                "jan.kowalski@example.com",
+                "",
+                "ul. Przykładowa 1, Warszawa",
+                self.license,
+            )
 
         # Pusty adres
         with self.assertRaises(ValueError):
-            Customer("CUST001", "Jan", "Kowalski", "jan.kowalski@example.com",
-                     "123456789", "", self.license)
+            Customer(
+                "CUST001",
+                "Jan",
+                "Kowalski",
+                "jan.kowalski@example.com",
+                "123456789",
+                "",
+                self.license,
+            )
 
         # Niepoprawny obiekt prawa jazdy
         with self.assertRaises(ValueError):
-            Customer("CUST001", "Jan", "Kowalski", "jan.kowalski@example.com",
-                     "123456789", "ul. Przykładowa 1, Warszawa", "niepoprawne_prawo_jazdy")
+            Customer(
+                "CUST001",
+                "Jan",
+                "Kowalski",
+                "jan.kowalski@example.com",
+                "123456789",
+                "ul. Przykładowa 1, Warszawa",
+                "niepoprawne_prawo_jazdy",
+            )
 
     def test_customer_str_representation(self):
         """Test reprezentacji tekstowej klienta"""
@@ -219,7 +277,7 @@ class TestCustomerRegistry(unittest.TestCase):
             license_number="ABC123456",
             issue_date=self.today - timedelta(days=365),
             expiry_date=self.today + timedelta(days=365),
-            categories=["B", "C"]
+            categories=["B", "C"],
         )
         self.customer1 = Customer(
             customer_id="CUST001",
@@ -228,7 +286,7 @@ class TestCustomerRegistry(unittest.TestCase):
             email="jan.kowalski@example.com",
             phone="123456789",
             address="ul. Przykładowa 1, Warszawa",
-            driving_license=self.license1
+            driving_license=self.license1,
         )
 
         # Tworzenie drugiego klienta
@@ -236,7 +294,7 @@ class TestCustomerRegistry(unittest.TestCase):
             license_number="DEF789012",
             issue_date=self.today - timedelta(days=730),
             expiry_date=self.today + timedelta(days=730),
-            categories=["B"]
+            categories=["B"],
         )
         self.customer2 = Customer(
             customer_id="CUST002",
@@ -245,7 +303,7 @@ class TestCustomerRegistry(unittest.TestCase):
             email="anna.nowak@example.com",
             phone="987654321",
             address="ul. Kwiatowa 2, Kraków",
-            driving_license=self.license2
+            driving_license=self.license2,
         )
 
         # Tworzenie trzeciego klienta o tym samym nazwisku
@@ -253,7 +311,7 @@ class TestCustomerRegistry(unittest.TestCase):
             license_number="GHI345678",
             issue_date=self.today - timedelta(days=500),
             expiry_date=self.today + timedelta(days=500),
-            categories=["B", "D"]
+            categories=["B", "D"],
         )
         self.customer3 = Customer(
             customer_id="CUST003",
@@ -262,7 +320,7 @@ class TestCustomerRegistry(unittest.TestCase):
             email="adam.kowalski@example.com",
             phone="456789123",
             address="ul. Leśna 3, Gdańsk",
-            driving_license=self.license3
+            driving_license=self.license3,
         )
 
     def test_register_customer(self):
@@ -352,13 +410,17 @@ class TestCustomerRegistry(unittest.TestCase):
         self.registry.register_customer(self.customer3)
 
         # Wszyscy klienci są początkowo w kategorii STANDARD
-        standard_customers = self.registry.get_customers_by_category(CustomerCategory.STANDARD)
+        standard_customers = self.registry.get_customers_by_category(
+            CustomerCategory.STANDARD
+        )
         self.assertEqual(len(standard_customers), 3)
 
         # Zmieńmy kategorię jednego klienta
         self.customer2.upgrade_category(CustomerCategory.GOLD)
 
-        standard_customers = self.registry.get_customers_by_category(CustomerCategory.STANDARD)
+        standard_customers = self.registry.get_customers_by_category(
+            CustomerCategory.STANDARD
+        )
         self.assertEqual(len(standard_customers), 2)
         self.assertIn(self.customer1, standard_customers)
         self.assertIn(self.customer3, standard_customers)
@@ -408,15 +470,12 @@ def test_driving_license_with_boundary_dates(self):
             license_number="TEST123",
             issue_date=today,
             expiry_date=today - timedelta(days=1),
-            categories=["B"]
+            categories=["B"],
         )
 
     # Prawo jazdy wydane i wygasające tego samego dnia (powinno być ważne)
     license_same_day = DrivingLicense(
-        license_number="TEST123",
-        issue_date=today,
-        expiry_date=today,
-        categories=["B"]
+        license_number="TEST123", issue_date=today, expiry_date=today, categories=["B"]
     )
 
     self.assertTrue(license_same_day.is_valid())
@@ -441,19 +500,16 @@ def test_driving_license_with_boundary_dates(self):
             license_number="TEST123",
             issue_date=today,
             expiry_date=today - timedelta(days=1),
-            categories=["B"]
+            categories=["B"],
         )
 
     # Prawo jazdy wydane i wygasające tego samego dnia (powinno być ważne)
     license_same_day = DrivingLicense(
-        license_number="TEST123",
-        issue_date=today,
-        expiry_date=today,
-        categories=["B"]
+        license_number="TEST123", issue_date=today, expiry_date=today, categories=["B"]
     )
 
     self.assertTrue(license_same_day.is_valid())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
