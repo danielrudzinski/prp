@@ -1,7 +1,6 @@
 import unittest
 from unittest.mock import Mock, patch
 from datetime import date, timedelta
-import uuid
 from src.rental import Rental, RentalManager, RentalStatus, RentalException
 from src.customers import Customer, CustomerCategory, DrivingLicense
 from src.vehicles import Vehicle, VehicleStatus, VehicleType

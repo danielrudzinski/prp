@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Dict, List, Optional, Any
-from datetime import date, timedelta
+from datetime import date
 import uuid
 from src.reviews import Review
 from src.vehicles import Vehicle, VehicleStatus

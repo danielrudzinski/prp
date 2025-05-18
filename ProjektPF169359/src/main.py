@@ -1,9 +1,9 @@
 from datetime import date, timedelta
-import uuid
 
-from vehicles import Vehicle, Car, VehicleInventory, VehicleType, VehicleStatus
+
+from vehicles import Car, VehicleInventory, VehicleType
 from customers import Customer, CustomerRegistry, DrivingLicense, CustomerCategory
-from rental import RentalManager, RentalStatus
+from rental import RentalManager
 
 
 def main():

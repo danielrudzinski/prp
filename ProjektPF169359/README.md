@@ -15,7 +15,9 @@
 ## 🧾 Wymagania
 
 - Python 3.8 lub nowszy
-- Brak zewnętrznych bibliotek — projekt opiera się wyłącznie na standardowej bibliotece Pythona
+  Instalacja potrzebnych bibliotek
+- pip install -r requirements.txt
+
 
 ## ▶️ Uruchomienie
 

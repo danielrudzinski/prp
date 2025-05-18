@@ -1,6 +1,6 @@
 import unittest
-from unittest.mock import Mock, patch
-from datetime import date, datetime, timedelta
+from unittest.mock import Mock
+from datetime import date, timedelta
 from src.customers import Customer, CustomerRegistry, CustomerCategory, DrivingLicense
 
 

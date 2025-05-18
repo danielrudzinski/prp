@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import Mock, patch
 from datetime import date
 from src.vehicles import Vehicle, Car, VehicleInventory, VehicleType, VehicleStatus
 
