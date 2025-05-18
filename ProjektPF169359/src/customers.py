@@ -25,7 +25,7 @@ class DrivingLicense:
         if not isinstance(expiry_date, date):
             raise ValueError("Data ważności musi być instancją datetime.date")
         if issue_date > expiry_date:
-            raise ValueError("Data wydania nie może być późniejsza niż data ważności")
+            raise ValueError("Data wydania nie może być późniejsza")
         if not isinstance(categories, list) or not all(
             isinstance(c, str) for c in categories
         ):
@@ -40,7 +40,7 @@ class DrivingLicense:
         if check_date is None:
             check_date = date.today()
         if not isinstance(check_date, date):
-            raise ValueError("Data sprawdzenia musi być instancją datetime.date")
+            raise ValueError("Data sprawdzenia musi być instancją datetime")
 
         return check_date <= self.expiry_date
 
@@ -129,7 +129,7 @@ class CustomerRegistry:
             raise ValueError("ID klienta musi być niepustym stringiem")
 
         if customer_id not in self.customers:
-            raise ValueError(f"Klient o ID {customer_id} nie istnieje w rejestrze")
+            raise ValueError(f"Klient o ID {customer_id} nie istnieje")
         del self.customers[customer_id]
 
     def get_customer(self, customer_id: str) -> Optional[Customer]:
@@ -148,7 +148,9 @@ class CustomerRegistry:
             if c.last_name.lower() == last_name.lower()
         ]
 
-    def get_customers_by_category(self, category: CustomerCategory) -> List[Customer]:
+    def get_customers_by_category(
+        self, category: CustomerCategory
+    ) -> List[Customer]:
         if not isinstance(category, CustomerCategory):
             raise ValueError("Kategoria musi być instancją CustomerCategory")
 

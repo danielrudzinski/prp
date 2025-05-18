@@ -22,7 +22,8 @@ class TestReview(unittest.TestCase):
         self.assertEqual(self.review.customer_id, "CUST001")
         self.assertEqual(self.review.rating, 4)
         self.assertEqual(
-            self.review.comment, "Bardzo dobra obsługa i samochód w świetnym stanie."
+            self.review.comment,
+            "Bardzo dobra obsługa i samochód w świetnym stanie.",
         )
         self.assertEqual(self.review.review_date, self.today)
 
@@ -68,7 +69,9 @@ class TestReview(unittest.TestCase):
         self.assertTrue(self.review.contains_keywords(["samochód"]))
 
         # Kilka słów kluczowych, jedno występuje
-        self.assertTrue(self.review.contains_keywords(["awaria", "obsługa", "problem"]))
+        self.assertTrue(
+            self.review.contains_keywords(["awaria", "obsługa", "problem"])
+        )
 
         # Słowo kluczowe z inną wielkością liter
         self.assertTrue(self.review.contains_keywords(["OBSŁUGA"]))
@@ -76,14 +79,18 @@ class TestReview(unittest.TestCase):
 
         # Słowo kluczowe nie występuje w komentarzu
         self.assertFalse(self.review.contains_keywords(["awaria"]))
-        self.assertFalse(self.review.contains_keywords(["problem", "naprawa"]))
+        self.assertFalse(
+            self.review.contains_keywords(["problem", "naprawa"])
+        )
 
         # Pusta lista słów kluczowych
         self.assertFalse(self.review.contains_keywords([]))
 
     def test_str_representation(self):
         """Test reprezentacji tekstowej opinii"""
-        expected_str = f'[{self.today}] CUST001: 4/5 - "Bardzo dobra obsługa i samochód w świetnym stanie."'
+        expected_str = (f'[{self.today}] CUST001: 4/5 '
+                        f'- "Bardzo dobra obsługa i samochód '
+                        f'w świetnym stanie."')
         self.assertEqual(str(self.review), expected_str)
 
     def test_review_empty_comment(self):
@@ -97,14 +104,18 @@ class TestReview(unittest.TestCase):
     def test_review_minimum_rating(self):
         """Test opinii z minimalną dozwoloną oceną"""
         # Minimalna dozwolona ocena to 1
-        min_rating_review = Review("RENT001", "CUST001", 1, "Komentarz", self.today)
+        min_rating_review = Review(
+            "RENT001", "CUST001", 1, "Komentarz", self.today
+        )
         self.assertEqual(min_rating_review.rating, 1)
         self.assertFalse(min_rating_review.is_positive())
 
     def test_review_with_special_characters(self):
         """Test komentarza zawierającego znaki specjalne"""
         special_char_comment = "Test ze znakami specjalnymi: !@#$%^&*()_+"
-        review = Review("RENT001", "CUST001", 5, special_char_comment, self.today)
+        review = Review(
+            "RENT001", "CUST001", 5, special_char_comment, self.today
+        )
         self.assertEqual(review.comment, special_char_comment)
         self.assertTrue(review.contains_keywords(["znakami", "specjalnymi"]))
         self.assertFalse(review.contains_keywords(["xyz", "123"]))
@@ -112,10 +123,16 @@ class TestReview(unittest.TestCase):
     def test_contains_keywords_partial_match(self):
         """Test sprawdzania częściowego dopasowania słów kluczowych"""
         review = Review(
-            "RENT001", "CUST001", 4, "Samochód był bardzo czysty i zadbany", self.today
+            "RENT001",
+            "CUST001",
+            4,
+            "Samochód był bardzo czysty i zadbany",
+            self.today,
         )
         # Słowa kluczowe jako podciągi (nie pełne słowa)
-        self.assertTrue(review.contains_keywords(["czyst"]))  # powinno znaleźć "czysty"
+        self.assertTrue(
+            review.contains_keywords(["czyst"])
+        )  # powinno znaleźć "czysty"
         self.assertTrue(
             review.contains_keywords(["mochód"])
         )  # powinno znaleźć "samochód"
@@ -134,11 +151,17 @@ class TestReview(unittest.TestCase):
         review_today = Review(
             "RENT002", "CUST001", 4, "Komentarz z dzisiaj", self.today
         )
-        review_tomorrow = Review("RENT003", "CUST001", 3, "Komentarz z jutra", tomorrow)
+        review_tomorrow = Review(
+            "RENT003", "CUST001", 3, "Komentarz z jutra", tomorrow
+        )
 
-        self.assertLess(review_yesterday.review_date, review_today.review_date)
+        self.assertLess(
+            review_yesterday.review_date, review_today.review_date
+        )
         self.assertLess(review_today.review_date, review_tomorrow.review_date)
-        self.assertNotEqual(review_yesterday.review_date, review_tomorrow.review_date)
+        self.assertNotEqual(
+            review_yesterday.review_date, review_tomorrow.review_date
+        )
 
 
 if __name__ == "__main__":

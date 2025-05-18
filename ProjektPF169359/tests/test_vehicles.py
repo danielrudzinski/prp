@@ -1,12 +1,17 @@
 import unittest
 from datetime import date
-from src.vehicles import Vehicle, Car, VehicleInventory, VehicleType, VehicleStatus
+from src.vehicles import (
+    Vehicle,
+    Car,
+    VehicleInventory,
+    VehicleType,
+    VehicleStatus,
+)
 
 
 class TestVehicle(unittest.TestCase):
 
     def setUp(self):
-
         self.vehicle = Vehicle(
             vehicle_id="TEST001",
             make="Toyota",
@@ -78,7 +83,9 @@ class TestVehicle(unittest.TestCase):
             self.vehicle.add_maintenance_record("", today, 250.0)
 
         with self.assertRaises(ValueError):
-            self.vehicle.add_maintenance_record("Wymiana oleju", "dzisiaj", 250.0)
+            self.vehicle.add_maintenance_record(
+                "Wymiana oleju", "dzisiaj", 250.0
+            )
 
         with self.assertRaises(ValueError):
             self.vehicle.add_maintenance_record("Wymiana oleju", today, -50.0)
@@ -87,17 +94,35 @@ class TestVehicle(unittest.TestCase):
         """Test inicjalizacji pojazdu z niepoprawnymi danymi"""
         with self.assertRaises(ValueError):
             Vehicle(
-                "", "Toyota", "Corolla", 2020, "WA12345", 150.0, VehicleType.COMPACT
+                "",
+                "Toyota",
+                "Corolla",
+                2020,
+                "WA12345",
+                150.0,
+                VehicleType.COMPACT,
             )
 
         with self.assertRaises(ValueError):
             Vehicle(
-                "TEST001", "", "Corolla", 2020, "WA12345", 150.0, VehicleType.COMPACT
+                "TEST001",
+                "",
+                "Corolla",
+                2020,
+                "WA12345",
+                150.0,
+                VehicleType.COMPACT,
             )
 
         with self.assertRaises(ValueError):
             Vehicle(
-                "TEST001", "Toyota", "", 2020, "WA12345", 150.0, VehicleType.COMPACT
+                "TEST001",
+                "Toyota",
+                "",
+                2020,
+                "WA12345",
+                150.0,
+                VehicleType.COMPACT,
             )
 
         with self.assertRaises(ValueError):
@@ -124,7 +149,13 @@ class TestVehicle(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Vehicle(
-                "TEST001", "Toyota", "Corolla", 2020, "", 150.0, VehicleType.COMPACT
+                "TEST001",
+                "Toyota",
+                "Corolla",
+                2020,
+                "",
+                150.0,
+                VehicleType.COMPACT,
             )
 
         with self.assertRaises(ValueError):
@@ -139,7 +170,42 @@ class TestVehicle(unittest.TestCase):
             )
 
         with self.assertRaises(ValueError):
-            Vehicle("TEST001", "Toyota", "Corolla", 2020, "WA12345", 150.0, "compact")
+            Vehicle(
+                "TEST001",
+                "Toyota",
+                "Corolla",
+                2020,
+                "WA12345",
+                150.0,
+                "compact",
+            )
+
+    def test_add_maintenance_record_with_zero_cost(self):
+        """Test dodawania zapisu konserwacji z zerowim kosztem"""
+        today = date.today()
+        self.vehicle.add_maintenance_record(
+            "Przegląd gwarancyjny", today, 0.0
+        )
+
+        self.assertEqual(len(self.vehicle.maintenance_history), 1)
+        record = self.vehicle.maintenance_history[0]
+        self.assertEqual(record["cost"], 0.0)
+
+    def test_change_status_multiple_times(self):
+        """Test wielokrotnej zmiany statusu pojazdu"""
+        self.assertEqual(self.vehicle.status, VehicleStatus.AVAILABLE)
+
+        self.vehicle.change_status(VehicleStatus.RENTED)
+        self.assertEqual(self.vehicle.status, VehicleStatus.RENTED)
+
+        self.vehicle.change_status(VehicleStatus.MAINTENANCE)
+        self.assertEqual(self.vehicle.status, VehicleStatus.MAINTENANCE)
+
+        self.vehicle.change_status(VehicleStatus.OUT_OF_SERVICE)
+        self.assertEqual(self.vehicle.status, VehicleStatus.OUT_OF_SERVICE)
+
+        self.vehicle.change_status(VehicleStatus.AVAILABLE)
+        self.assertEqual(self.vehicle.status, VehicleStatus.AVAILABLE)
 
 
 class TestCar(unittest.TestCase):
@@ -175,7 +241,9 @@ class TestCar(unittest.TestCase):
 
     def test_car_str_representation(self):
         """Test reprezentacji tekstowej samochodu"""
-        expected_str = "Toyota Corolla (2020) - WA12345, 5 drzwi, Benzyna, Manualna"
+        expected_str = (
+            "Toyota Corolla (2020) - WA12345, 5 drzwi, Benzyna, Manualna"
+        )
         self.assertEqual(str(self.car), expected_str)
 
     def test_car_initialization_invalid_data(self):
@@ -327,7 +395,7 @@ class TestVehicleInventory(unittest.TestCase):
         self.assertNotIn(self.vehicle2, available)
 
     def test_get_available_vehicles_by_type(self):
-
+        """Test pobierania dostępnych pojazdów według typu"""
         self.inventory.add_vehicle(self.vehicle1)  # COMPACT
         self.inventory.add_vehicle(self.vehicle2)  # STANDARD
         self.inventory.add_vehicle(self.vehicle3)  # PREMIUM
@@ -351,7 +419,7 @@ class TestVehicleInventory(unittest.TestCase):
         self.assertEqual(len(premium_vehicles), 0)
 
     def test_count_vehicles_by_status(self):
-
+        """Test zliczania pojazdów według statusu"""
         self.inventory.add_vehicle(self.vehicle1)
         self.inventory.add_vehicle(self.vehicle2)
         self.inventory.add_vehicle(self.vehicle3)
@@ -370,60 +438,6 @@ class TestVehicleInventory(unittest.TestCase):
         self.assertEqual(counts[VehicleStatus.RENTED], 1)
         self.assertEqual(counts[VehicleStatus.MAINTENANCE], 1)
         self.assertEqual(counts[VehicleStatus.OUT_OF_SERVICE], 0)
-
-
-def test_add_maintenance_record_with_zero_cost(self):
-
-    today = date.today()
-    self.vehicle.add_maintenance_record("Przegląd gwarancyjny", today, 0.0)
-
-    self.assertEqual(len(self.vehicle.maintenance_history), 1)
-    record = self.vehicle.maintenance_history[0]
-    self.assertEqual(record["cost"], 0.0)
-
-
-def test_change_status_multiple_times(self):
-
-    self.assertEqual(self.vehicle.status, VehicleStatus.AVAILABLE)
-
-    self.vehicle.change_status(VehicleStatus.RENTED)
-    self.assertEqual(self.vehicle.status, VehicleStatus.RENTED)
-
-    self.vehicle.change_status(VehicleStatus.MAINTENANCE)
-    self.assertEqual(self.vehicle.status, VehicleStatus.MAINTENANCE)
-
-    self.vehicle.change_status(VehicleStatus.OUT_OF_SERVICE)
-    self.assertEqual(self.vehicle.status, VehicleStatus.OUT_OF_SERVICE)
-
-    self.vehicle.change_status(VehicleStatus.AVAILABLE)
-    self.assertEqual(self.vehicle.status, VehicleStatus.AVAILABLE)
-
-
-def test_add_maintenance_record_with_zero_cost(self):
-
-    today = date.today()
-    self.vehicle.add_maintenance_record("Przegląd gwarancyjny", today, 0.0)
-
-    self.assertEqual(len(self.vehicle.maintenance_history), 1)
-    record = self.vehicle.maintenance_history[0]
-    self.assertEqual(record["cost"], 0.0)
-
-
-def test_change_status_multiple_times(self):
-
-    self.assertEqual(self.vehicle.status, VehicleStatus.AVAILABLE)
-
-    self.vehicle.change_status(VehicleStatus.RENTED)
-    self.assertEqual(self.vehicle.status, VehicleStatus.RENTED)
-
-    self.vehicle.change_status(VehicleStatus.MAINTENANCE)
-    self.assertEqual(self.vehicle.status, VehicleStatus.MAINTENANCE)
-
-    self.vehicle.change_status(VehicleStatus.OUT_OF_SERVICE)
-    self.assertEqual(self.vehicle.status, VehicleStatus.OUT_OF_SERVICE)
-
-    self.vehicle.change_status(VehicleStatus.AVAILABLE)
-    self.assertEqual(self.vehicle.status, VehicleStatus.AVAILABLE)
 
 
 if __name__ == "__main__":

@@ -35,9 +35,13 @@ class Rental:
         if not isinstance(vehicle, Vehicle):
             raise ValueError("Pojazd musi być instancją klasy Vehicle")
         if not isinstance(start_date, date):
-            raise ValueError("Data rozpoczęcia musi być instancją datetime.date")
+            raise ValueError(
+                "Data rozpoczęcia musi być instancją datetime.date"
+            )
         if not isinstance(end_date, date):
-            raise ValueError("Data zakończenia musi być instancją datetime.date")
+            raise ValueError(
+                "Data zakończenia musi być instancją datetime.date"
+            )
         if start_date > end_date:
             raise ValueError(
                 "Data rozpoczęcia nie może być późniejsza niż data zakończenia"
@@ -68,7 +72,9 @@ class Rental:
         if current_date is None:
             current_date = date.today()
         if not isinstance(current_date, date):
-            raise ValueError("Data sprawdzenia musi być instancją datetime.date")
+            raise ValueError(
+                "Data sprawdzenia musi być instancją datetime.date"
+            )
 
         if self.status != RentalStatus.ACTIVE:
             return False
@@ -113,7 +119,8 @@ class Rental:
     def cancel(self) -> None:
         if self.status in [RentalStatus.COMPLETED, RentalStatus.CANCELLED]:
             raise RentalException(
-                "Nie można anulować wypożyczenia, które zostało już zakończone lub anulowane"
+                "Nie można anulować wypożyczenia,"
+                " które zostało już zakończone lub anulowane"
             )
 
         self.status = RentalStatus.CANCELLED
@@ -133,16 +140,24 @@ class RentalManager:
         self.reviews: List[Review] = []
 
     def create_rental(
-        self, customer: Customer, vehicle: Vehicle, start_date: date, end_date: date
+        self,
+        customer: Customer,
+        vehicle: Vehicle,
+        start_date: date,
+        end_date: date,
     ) -> Rental:
         if not isinstance(customer, Customer):
             raise ValueError("Klient musi być instancją klasy Customer")
         if not isinstance(vehicle, Vehicle):
             raise ValueError("Pojazd musi być instancją klasy Vehicle")
         if not isinstance(start_date, date):
-            raise ValueError("Data rozpoczęcia musi być instancją datetime.date")
+            raise ValueError(
+                "Data rozpoczęcia musi być instancją datetime.date"
+            )
         if not isinstance(end_date, date):
-            raise ValueError("Data zakończenia musi być instancją datetime.date")
+            raise ValueError(
+                "Data zakończenia musi być instancją datetime.date"
+            )
 
         if not customer.can_rent():
             raise RentalException(
@@ -155,7 +170,9 @@ class RentalManager:
             )
 
         if not vehicle.is_available():
-            raise RentalException(f"Pojazd {vehicle.vehicle_id} nie jest dostępny")
+            raise RentalException(
+                f"Pojazd {vehicle.vehicle_id} nie jest dostępny"
+            )
 
         if start_date > end_date:
             raise RentalException(
@@ -176,7 +193,9 @@ class RentalManager:
             daily_rate *= 0.85
 
         rental_id = str(uuid.uuid4())
-        rental = Rental(rental_id, customer, vehicle, start_date, end_date, daily_rate)
+        rental = Rental(
+            rental_id, customer, vehicle, start_date, end_date, daily_rate
+        )
 
         vehicle.change_status(VehicleStatus.RENTED)
 
@@ -200,11 +219,14 @@ class RentalManager:
 
         rental = self.get_rental(rental_id)
         if not rental:
-            raise RentalException(f"Wypożyczenie o ID {rental_id} nie istnieje")
+            raise RentalException(
+                f"Wypożyczenie o ID {rental_id} nie istnieje"
+            )
 
         if return_date < rental.start_date:
             raise ValueError(
-                "Data zwrotu nie może być wcześniejsza niż data rozpoczęcia wypożyczenia"
+                "Data zwrotu nie może być wcześniejsza "
+                "niż data rozpoczęcia wypożyczenia"
             )
 
         return rental.complete(return_date)
@@ -215,42 +237,61 @@ class RentalManager:
 
         rental = self.get_rental(rental_id)
         if not rental:
-            raise RentalException(f"Wypożyczenie o ID {rental_id} nie istnieje")
+            raise RentalException(
+                f"Wypożyczenie o ID {rental_id} nie istnieje"
+            )
 
         rental.cancel()
 
     def get_active_rentals(self) -> List[Rental]:
-        return [r for r in self.rentals.values() if r.status == RentalStatus.ACTIVE]
+        return [
+            r
+            for r in self.rentals.values()
+            if r.status == RentalStatus.ACTIVE
+        ]
 
-    def get_overdue_rentals(self, current_date: Optional[date] = None) -> List[Rental]:
+    def get_overdue_rentals(
+        self, current_date: Optional[date] = None
+    ) -> List[Rental]:
         if current_date is None:
             current_date = date.today()
-        return [r for r in self.rentals.values() if r.is_overdue(current_date)]
+        return [
+            r for r in self.rentals.values() if r.is_overdue(current_date)
+        ]
 
     def get_customer_rentals(self, customer_id: str) -> List[Rental]:
         if not customer_id or not isinstance(customer_id, str):
             raise ValueError("ID klienta musi być niepustym stringiem")
 
         return [
-            r for r in self.rentals.values() if r.customer.customer_id == customer_id
+            r
+            for r in self.rentals.values()
+            if r.customer.customer_id == customer_id
         ]
 
     def get_vehicle_rental_history(self, vehicle_id: str) -> List[Rental]:
         if not vehicle_id or not isinstance(vehicle_id, str):
             raise ValueError("ID pojazdu musi być niepustym stringiem")
 
-        return [r for r in self.rentals.values() if r.vehicle.vehicle_id == vehicle_id]
+        return [
+            r
+            for r in self.rentals.values()
+            if r.vehicle.vehicle_id == vehicle_id
+        ]
 
     def add_review(
         self, rental_id: str, rating: int, comment: str, review_date: date
     ) -> Review:
         rental = self.get_rental(rental_id)
         if not rental:
-            raise RentalException(f"Wypożyczenie o ID {rental_id} nie istnieje")
+            raise RentalException(
+                f"Wypożyczenie o ID {rental_id} nie istnieje"
+            )
 
         if rental.status != RentalStatus.COMPLETED:
             raise RentalException(
-                "Nie można dodać opinii do wypożyczenia, które nie zostało zakończone"
+                "Nie można dodać opinii do wypożyczenia,"
+                "które nie zostało zakończone"
             )
 
         review = Review(
@@ -269,24 +310,33 @@ class RentalManager:
 
     def get_average_rating_for_customer(self, customer_id: str) -> float:
         reviews = self.get_reviews_for_customer(customer_id)
-        return sum(r.rating for r in reviews) / len(reviews) if reviews else 0.0
+        return (
+            sum(r.rating for r in reviews) / len(reviews) if reviews else 0.0
+        )
 
     def generate_rental_report(
         self, start_date: date, end_date: date
     ) -> Dict[str, Any]:
         if not isinstance(start_date, date):
-            raise ValueError("Data początkowa musi być instancją datetime.date")
+            raise ValueError(
+                "Data początkowa musi być instancją datetime.date"
+            )
         if not isinstance(end_date, date):
             raise ValueError("Data końcowa musi być instancją datetime.date")
         if start_date > end_date:
-            raise ValueError("Data początkowa nie może być późniejsza niż data końcowa")
+            raise ValueError(
+                "Data początkowa nie może być późniejsza niż data końcowa"
+            )
 
         relevant_rentals = [
             r
             for r in self.rentals.values()
             if (
                 r.start_date <= end_date
-                and (r.actual_return_date is None or r.actual_return_date >= start_date)
+                and (
+                    r.actual_return_date is None
+                    or r.actual_return_date >= start_date
+                )
             )
         ]
 
@@ -297,7 +347,8 @@ class RentalManager:
         )
         total_rentals = len(relevant_rentals)
         avg_duration = (
-            sum(r.calculate_duration() for r in relevant_rentals) / total_rentals
+            sum(r.calculate_duration() for r in relevant_rentals)
+            / total_rentals
             if total_rentals > 0
             else 0
         )
@@ -322,10 +373,18 @@ class RentalManager:
             "total_rentals": total_rentals,
             "completed_rentals": len(completed_rentals),
             "active_rentals": len(
-                [r for r in relevant_rentals if r.status == RentalStatus.ACTIVE]
+                [
+                    r
+                    for r in relevant_rentals
+                    if r.status == RentalStatus.ACTIVE
+                ]
             ),
             "cancelled_rentals": len(
-                [r for r in relevant_rentals if r.status == RentalStatus.CANCELLED]
+                [
+                    r
+                    for r in relevant_rentals
+                    if r.status == RentalStatus.CANCELLED
+                ]
             ),
             "overdue_rentals": len(overdue_rentals),
             "total_revenue": total_revenue,

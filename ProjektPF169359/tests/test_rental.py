@@ -17,7 +17,9 @@ class TestRental(unittest.TestCase):
         # Mock dla obiektu Vehicle
         self.vehicle = Mock(spec=Vehicle)
         self.vehicle.vehicle_id = "VEH001"
-        self.vehicle.__str__ = Mock(return_value="Toyota Corolla (2020) - WA12345")
+        self.vehicle.__str__ = Mock(
+            return_value="Toyota Corolla (2020) - WA12345"
+        )
         # Tworzenie obiektu Rental
         self.rental = Rental(
             rental_id="RENT001",
@@ -79,7 +81,12 @@ class TestRental(unittest.TestCase):
             )
         with self.assertRaises(ValueError):
             Rental(
-                "RENT001", self.customer, self.vehicle, self.today, "nie_data", 150.0
+                "RENT001",
+                self.customer,
+                self.vehicle,
+                self.today,
+                "nie_data",
+                150.0,
             )
         with self.assertRaises(ValueError):
             Rental(
@@ -103,7 +110,8 @@ class TestRental(unittest.TestCase):
     def test_str_representation(self):
         expected_str = (
             f"Wypożyczenie RENT001: Jan Kowalski - "
-            f"Toyota Corolla (2020) - WA12345, {self.today} do {self.today + timedelta(days=3)}, "
+            f"Toyota Corolla (2020) - WA12345, "
+            f"{self.today} do {self.today + timedelta(days=3)}, "
             f"status: active"
         )
         self.assertEqual(str(self.rental), expected_str)
@@ -133,17 +141,27 @@ class TestRental(unittest.TestCase):
         self.assertEqual(rental_same_day.calculate_base_cost(), 150.0)
 
     def test_is_overdue(self):
-        self.assertFalse(self.rental.is_overdue(self.today + timedelta(days=2)))
-        self.assertFalse(self.rental.is_overdue(self.today + timedelta(days=3)))
-        self.assertTrue(self.rental.is_overdue(self.today + timedelta(days=4)))
+        self.assertFalse(
+            self.rental.is_overdue(self.today + timedelta(days=2))
+        )
+        self.assertFalse(
+            self.rental.is_overdue(self.today + timedelta(days=3))
+        )
+        self.assertTrue(
+            self.rental.is_overdue(self.today + timedelta(days=4))
+        )
         self.rental.status = RentalStatus.COMPLETED
-        self.assertFalse(self.rental.is_overdue(self.today + timedelta(days=4)))
+        self.assertFalse(
+            self.rental.is_overdue(self.today + timedelta(days=4))
+        )
 
     def test_add_charge(self):
         self.assertEqual(len(self.rental.additional_charges), 0)
         self.rental.add_charge("Ubezpieczenie", 50.0)
         self.assertEqual(len(self.rental.additional_charges), 1)
-        self.assertEqual(self.rental.additional_charges["Ubezpieczenie"], 50.0)
+        self.assertEqual(
+            self.rental.additional_charges["Ubezpieczenie"], 50.0
+        )
         self.rental.add_charge("Pełny bak", 100.0)
         self.assertEqual(len(self.rental.additional_charges), 2)
         self.assertEqual(self.rental.additional_charges["Pełny bak"], 100.0)
@@ -159,7 +177,9 @@ class TestRental(unittest.TestCase):
         self.assertEqual(self.rental.status, RentalStatus.COMPLETED)
         self.assertEqual(self.rental.actual_return_date, return_date)
         self.assertEqual(cost, 600.0)
-        self.vehicle.change_status.assert_called_once_with(VehicleStatus.AVAILABLE)
+        self.vehicle.change_status.assert_called_once_with(
+            VehicleStatus.AVAILABLE
+        )
 
     def test_complete_with_additional_charges(self):
         self.vehicle.change_status = Mock()
@@ -175,7 +195,9 @@ class TestRental(unittest.TestCase):
         cost = self.rental.complete(return_date)
         self.assertEqual(cost, 1050.0)
         self.assertIn("Opłata za opóźnienie", self.rental.additional_charges)
-        self.assertEqual(self.rental.additional_charges["Opłata za opóźnienie"], 450.0)
+        self.assertEqual(
+            self.rental.additional_charges["Opłata za opóźnienie"], 450.0
+        )
 
     def test_complete_non_active_rental(self):
         self.rental.status = RentalStatus.CANCELLED
@@ -186,7 +208,9 @@ class TestRental(unittest.TestCase):
         self.vehicle.change_status = Mock()
         self.rental.cancel()
         self.assertEqual(self.rental.status, RentalStatus.CANCELLED)
-        self.vehicle.change_status.assert_called_once_with(VehicleStatus.AVAILABLE)
+        self.vehicle.change_status.assert_called_once_with(
+            VehicleStatus.AVAILABLE
+        )
 
     def test_cancel_completed_rental(self):
         self.rental.status = RentalStatus.COMPLETED
@@ -373,7 +397,9 @@ class TestRentalManager(unittest.TestCase):
             rental.rental_id, self.today + timedelta(days=3)
         )
         self.assertEqual(rental.status, RentalStatus.COMPLETED)
-        self.assertEqual(rental.actual_return_date, self.today + timedelta(days=3))
+        self.assertEqual(
+            rental.actual_return_date, self.today + timedelta(days=3)
+        )
         self.assertEqual(cost, 600.0)
 
     def test_complete_nonexistent_rental(self):
@@ -438,7 +464,9 @@ class TestRentalManager(unittest.TestCase):
 
         # symulujemy, że dziś jest późniejszy dzień
         simulated_today = self.today + timedelta(days=10)
-        overdue_rentals = self.manager.get_overdue_rentals(current_date=simulated_today)
+        overdue_rentals = self.manager.get_overdue_rentals(
+            current_date=simulated_today
+        )
 
         self.assertEqual(len(overdue_rentals), 1)
         self.assertIn(rental, overdue_rentals)
@@ -480,11 +508,15 @@ class TestRentalManager(unittest.TestCase):
             start_date=self.today,
             end_date=self.today + timedelta(days=3),
         )
-        customer_rentals = self.manager.get_customer_rentals(self.customer.customer_id)
+        customer_rentals = self.manager.get_customer_rentals(
+            self.customer.customer_id
+        )
         self.assertEqual(len(customer_rentals), 1)
         self.assertIn(rental1, customer_rentals)
         self.assertNotIn(rental2, customer_rentals)
-        customer_rentals = self.manager.get_customer_rentals(customer2.customer_id)
+        customer_rentals = self.manager.get_customer_rentals(
+            customer2.customer_id
+        )
         self.assertEqual(len(customer_rentals), 1)
         self.assertIn(rental2, customer_rentals)
         self.assertNotIn(rental1, customer_rentals)
@@ -498,7 +530,9 @@ class TestRentalManager(unittest.TestCase):
             start_date=self.today,
             end_date=self.today + timedelta(days=3),
         )
-        self.manager.complete_rental(rental1.rental_id, self.today + timedelta(days=3))
+        self.manager.complete_rental(
+            rental1.rental_id, self.today + timedelta(days=3)
+        )
         rental2 = self.manager.create_rental(
             customer=self.customer,
             vehicle=self.vehicle,
@@ -511,7 +545,9 @@ class TestRentalManager(unittest.TestCase):
         self.assertEqual(len(vehicle_history), 2)
         self.assertIn(rental1, vehicle_history)
         self.assertIn(rental2, vehicle_history)
-        vehicle_history = self.manager.get_vehicle_rental_history("NIEISTNIEJACY")
+        vehicle_history = self.manager.get_vehicle_rental_history(
+            "NIEISTNIEJACY"
+        )
         self.assertEqual(len(vehicle_history), 0)
 
     def test_generate_rental_report(self):
@@ -538,7 +574,9 @@ class TestRentalManager(unittest.TestCase):
             start_date=self.today + timedelta(days=1),
             end_date=self.today + timedelta(days=6),
         )
-        self.manager.complete_rental(rental1.rental_id, self.today + timedelta(days=3))
+        self.manager.complete_rental(
+            rental1.rental_id, self.today + timedelta(days=3)
+        )
         self.manager.cancel_rental(rental2.rental_id)
         vehicle3 = Vehicle(
             vehicle_id="VEH003",
@@ -555,6 +593,7 @@ class TestRentalManager(unittest.TestCase):
             start_date=self.today + timedelta(days=2),
             end_date=self.today + timedelta(days=5),
         )
+        self.assertEqual(rental3.status, RentalStatus.ACTIVE)
         report = self.manager.generate_rental_report(
             start_date=self.today, end_date=self.today + timedelta(days=10)
         )
@@ -564,7 +603,9 @@ class TestRentalManager(unittest.TestCase):
         self.assertEqual(report["active_rentals"], 1)
         self.assertEqual(report["overdue_rentals"], 0)
         self.assertEqual(report["total_revenue"], 600.0)
-        self.assertAlmostEqual(report["average_rental_duration"], 4.666666666666667)
+        self.assertAlmostEqual(
+            report["average_rental_duration"], 4.666666666666667
+        )
 
     # Dodatkowe testy walidacyjne
     def test_generate_rental_report_invalid_dates(self):
@@ -630,7 +671,7 @@ class TestRentalManager(unittest.TestCase):
 
         # Próba wypożyczenia już wypożyczonego pojazdu
         with self.assertRaises(RentalException):
-            rental2 = self.manager.create_rental(
+            self.manager.create_rental(
                 customer=self.customer,
                 vehicle=self.vehicle,
                 start_date=self.today + timedelta(days=1),
@@ -638,17 +679,20 @@ class TestRentalManager(unittest.TestCase):
             )
 
         # Zakończenie pierwszego wypożyczenia
-        self.manager.complete_rental(rental1.rental_id, self.today + timedelta(days=3))
+        self.manager.complete_rental(
+            rental1.rental_id, self.today + timedelta(days=3)
+        )
 
-        rental3 = self.manager.create_rental(
+        # Drugie wypożyczenie po zakończeniu pierwszego
+        rental2 = self.manager.create_rental(
             customer=self.customer,
             vehicle=self.vehicle,
             start_date=self.today + timedelta(days=4),
             end_date=self.today + timedelta(days=7),
         )
 
-        self.assertEqual(rental3.vehicle, self.vehicle)
-        self.assertEqual(rental3.status, RentalStatus.ACTIVE)
+        self.assertEqual(rental2.vehicle, self.vehicle)
+        self.assertEqual(rental2.status, RentalStatus.ACTIVE)
 
     def test_rental_status_changes(self):
         """Test zmian statusu wypożyczenia"""
@@ -674,7 +718,9 @@ class TestRentalManager(unittest.TestCase):
         )
 
         # Zakończenie wypożyczenia
-        self.manager.complete_rental(rental.rental_id, self.today + timedelta(days=3))
+        self.manager.complete_rental(
+            rental.rental_id, self.today + timedelta(days=3)
+        )
         self.assertEqual(rental.status, RentalStatus.COMPLETED)
 
     def test_rental_with_late_return_status(self):
@@ -725,7 +771,7 @@ class TestRentalManager(unittest.TestCase):
             self.rental.is_overdue("niepoprawna_data")
 
     def test_get_overdue_rentals_with_no_rentals(self):
-        """Test pobierania przeterminowanych wypożyczeń gdy nie ma żadnych wypożyczeń"""
+        """Test pobierania przetermi wypo gdy nie ma wypo"""
         overdue_rentals = self.manager.get_overdue_rentals()
         self.assertEqual(len(overdue_rentals), 0)
 
@@ -745,20 +791,27 @@ class TestRentalManager(unittest.TestCase):
         self.assertEqual(report["average_rental_duration"], 0)
 
     def test_complete_rental_with_invalid_return_date(self):
-        """Test zakończenia wypożyczenia z niepoprawną datą zwrotu"""
         rental = self.manager.create_rental(
             customer=self.customer,
             vehicle=self.vehicle,
             start_date=self.today,
             end_date=self.today + timedelta(days=3),
         )
-        # Próba zakończenia wypożyczenia z datą zwrotu wcześniejszą niż data rozpoczęcia
-        invalid_return_date = self.today - timedelta(days=1)
+
         with self.assertRaises(ValueError):
-            self.manager.complete_rental(rental.rental_id, invalid_return_date)
+            self.manager.complete_rental(
+                rental_id=rental.rental_id,
+                return_date=self.today - timedelta(days=1),
+            )
+
+        with self.assertRaises(ValueError):
+            self.manager.complete_rental(
+                rental_id=rental.rental_id,
+                return_date="2025-01-01",
+            )
 
     def test_add_review_to_active_rental(self):
-        """Test dodawania opinii do aktywnego wypożyczenia"""
+
         rental = self.manager.create_rental(
             customer=self.customer,
             vehicle=self.vehicle,
@@ -766,7 +819,6 @@ class TestRentalManager(unittest.TestCase):
             end_date=self.today + timedelta(days=3),
         )
 
-        # Próba dodania opinii do aktywnego wypożyczenia
         with self.assertRaises(RentalException):
             self.manager.add_review(
                 rental_id=rental.rental_id,
@@ -775,23 +827,13 @@ class TestRentalManager(unittest.TestCase):
                 review_date=self.today,
             )
 
-    def test_create_rental_with_minimum_duration(self):
-        """Test tworzenia wypożyczenia na minimalny okres (1 dzień)"""
-        rental = self.manager.create_rental(
-            customer=self.customer,
-            vehicle=self.vehicle,
-            start_date=self.today,
-            end_date=self.today,
-        )
-
-        self.assertEqual(rental.calculate_duration(), 1)
-        self.assertEqual(rental.calculate_base_cost(), self.vehicle.daily_rate)
-
     def test_create_rental_with_exact_license_expiry(self):
-        """Test wypożyczenia z prawem jazdy wygasającym dokładnie w dniu zakończenia wypożyczenia"""
+
         # Modyfikujemy datę ważności prawa jazdy
         original_expiry = self.customer.driving_license.expiry_date
-        self.customer.driving_license.expiry_date = self.today + timedelta(days=3)
+        self.customer.driving_license.expiry_date = self.today + timedelta(
+            days=3
+        )
 
         try:
             rental = self.manager.create_rental(
@@ -806,28 +848,8 @@ class TestRentalManager(unittest.TestCase):
             # Przywracamy oryginalną datę ważności
             self.customer.driving_license.expiry_date = original_expiry
 
-    def test_rental_with_license_expiring_during_rental(self):
-        """Test wypożyczenia gdy prawo jazdy wygasa w trakcie okresu wypożyczenia"""
-        # Ustawienie prawa jazdy wygasającego w trakcie wypożyczenia
-        today = date.today()
-        original_expiry = self.customer.driving_license.expiry_date
-        self.customer.driving_license.expiry_date = today + timedelta(days=1)
-
-        try:
-            # Próba wypożyczenia na okres dłuższy niż ważność prawa jazdy
-            with self.assertRaises(RentalException):
-                self.manager.create_rental(
-                    customer=self.customer,
-                    vehicle=self.vehicle,
-                    start_date=today,
-                    end_date=today + timedelta(days=5),
-                )
-        finally:
-            # Przywrócenie oryginalnej daty ważności
-            self.customer.driving_license.expiry_date = original_expiry
-
     def test_complete_rental_with_return_date_before_start_date(self):
-        """Test zakończenia wypożyczenia z datą zwrotu wcześniejszą niż data rozpoczęcia"""
+
         rental = self.manager.create_rental(
             customer=self.customer,
             vehicle=self.vehicle,
@@ -835,10 +857,10 @@ class TestRentalManager(unittest.TestCase):
             end_date=self.today + timedelta(days=3),
         )
 
-        # Próba zakończenia wypożyczenia z datą zwrotu wcześniejszą niż data rozpoczęcia
         with self.assertRaises(ValueError):
             self.manager.complete_rental(
-                rental_id=rental.rental_id, return_date=self.today - timedelta(days=1)
+                rental_id=rental.rental_id,
+                return_date=self.today - timedelta(days=1),
             )
 
     def test_vehicle_status_change_during_active_rental(self):
@@ -859,49 +881,15 @@ class TestRentalManager(unittest.TestCase):
         # Sprawdzenie czy zmiana statusu została zastosowana
         self.assertEqual(self.vehicle.status, VehicleStatus.MAINTENANCE)
 
-        # Próba zakończenia wypożyczenia - powinno przywrócić status na AVAILABLE
         self.manager.complete_rental(
-            rental_id=rental.rental_id, return_date=self.today + timedelta(days=3)
+            rental_id=rental.rental_id,
+            return_date=self.today + timedelta(days=3),
         )
 
         # Sprawdzenie czy status pojazdu został zmieniony na AVAILABLE
         self.assertEqual(self.vehicle.status, VehicleStatus.AVAILABLE)
 
-    # W klasie TestRental
-    def test_complete_rental_with_invalid_return_date(self):
-        """Test zakończenia wypożyczenia z niepoprawną datą zwrotu"""
-        rental = self.manager.create_rental(
-            customer=self.customer,
-            vehicle=self.vehicle,
-            start_date=self.today,
-            end_date=self.today + timedelta(days=3),
-        )
-
-        # Próba zakończenia wypożyczenia z datą zwrotu wcześniejszą niż data rozpoczęcia
-        invalid_return_date = self.today - timedelta(days=1)
-        with self.assertRaises(ValueError):
-            self.manager.complete_rental(rental.rental_id, invalid_return_date)
-
-    def test_add_review_to_active_rental(self):
-        """Test dodawania opinii do aktywnego wypożyczenia"""
-        rental = self.manager.create_rental(
-            customer=self.customer,
-            vehicle=self.vehicle,
-            start_date=self.today,
-            end_date=self.today + timedelta(days=3),
-        )
-
-        # Próba dodania opinii do aktywnego wypożyczenia
-        with self.assertRaises(RentalException):
-            self.manager.add_review(
-                rental_id=rental.rental_id,
-                rating=5,
-                comment="Świetne auto!",
-                review_date=self.today,
-            )
-
     def test_create_rental_with_minimum_duration(self):
-        """Test tworzenia wypożyczenia na minimalny okres (1 dzień)"""
         rental = self.manager.create_rental(
             customer=self.customer,
             vehicle=self.vehicle,
@@ -910,17 +898,17 @@ class TestRentalManager(unittest.TestCase):
         )
 
         self.assertEqual(rental.calculate_duration(), 1)
-        self.assertEqual(rental.calculate_base_cost(), self.vehicle.daily_rate)
+        self.assertEqual(
+            rental.calculate_base_cost(), self.vehicle.daily_rate
+        )
+        self.assertEqual(rental.status, RentalStatus.ACTIVE)
 
     def test_rental_with_license_expiring_during_rental(self):
-        """Test wypożyczenia gdy prawo jazdy wygasa w trakcie okresu wypożyczenia"""
-        # Ustawienie prawa jazdy wygasającego w trakcie wypożyczenia
         today = date.today()
         original_expiry = self.customer.driving_license.expiry_date
         self.customer.driving_license.expiry_date = today + timedelta(days=1)
 
         try:
-            # Próba wypożyczenia na okres dłuższy niż ważność prawa jazdy
             with self.assertRaises(RentalException):
                 self.manager.create_rental(
                     customer=self.customer,
@@ -929,7 +917,6 @@ class TestRentalManager(unittest.TestCase):
                     end_date=today + timedelta(days=5),
                 )
         finally:
-            # Przywrócenie oryginalnej daty ważności
             self.customer.driving_license.expiry_date = original_expiry
 
     if __name__ == "__main__":

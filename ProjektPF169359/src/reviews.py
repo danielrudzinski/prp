@@ -31,4 +31,5 @@ class Review:
         return any(keyword.lower() in comment_lower for keyword in keywords)
 
     def __str__(self) -> str:
-        return f'[{self.review_date}] {self.customer_id}: {self.rating}/5 - "{self.comment}"'
+        return (f'[{self.review_date}] {self.customer_id}: '
+                f'{self.rating}/5 - "{self.comment}"')

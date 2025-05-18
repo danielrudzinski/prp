@@ -1,7 +1,12 @@
 import unittest
 from unittest.mock import Mock
 from datetime import date, timedelta
-from src.customers import Customer, CustomerRegistry, CustomerCategory, DrivingLicense
+from src.customers import (
+    Customer,
+    CustomerRegistry,
+    CustomerCategory,
+    DrivingLicense,
+)
 
 
 class TestDrivingLicense(unittest.TestCase):
@@ -19,20 +24,29 @@ class TestDrivingLicense(unittest.TestCase):
     def test_license_initialization(self):
         """Test poprawnej inicjalizacji prawa jazdy"""
         self.assertEqual(self.license.license_number, "ABC123456")
-        self.assertEqual(self.license.issue_date, self.today - timedelta(days=365))
-        self.assertEqual(self.license.expiry_date, self.today + timedelta(days=365))
+        self.assertEqual(
+            self.license.issue_date, self.today - timedelta(days=365)
+        )
+        self.assertEqual(
+            self.license.expiry_date, self.today + timedelta(days=365)
+        )
         self.assertEqual(self.license.categories, ["B", "C"])
 
     def test_license_initialization_invalid_data(self):
         """Test inicjalizacji prawa jazdy z niepoprawnymi danymi"""
         # Pusty numer prawa jazdy
         with self.assertRaises(ValueError):
-            DrivingLicense("", self.today, self.today + timedelta(days=365), ["B"])
+            DrivingLicense(
+                "", self.today, self.today + timedelta(days=365), ["B"]
+            )
 
         # Niepoprawny typ daty wydania
         with self.assertRaises(ValueError):
             DrivingLicense(
-                "ABC123456", "niepoprawna_data", self.today + timedelta(days=365), ["B"]
+                "ABC123456",
+                "niepoprawna_data",
+                self.today + timedelta(days=365),
+                ["B"],
             )
 
         # Niepoprawny typ daty ważności
@@ -42,7 +56,10 @@ class TestDrivingLicense(unittest.TestCase):
         # Data wydania późniejsza niż data ważności
         with self.assertRaises(ValueError):
             DrivingLicense(
-                "ABC123456", self.today + timedelta(days=10), self.today, ["B"]
+                "ABC123456",
+                self.today + timedelta(days=10),
+                self.today,
+                ["B"],
             )
 
         # Niepoprawny typ listy kategorii
@@ -54,7 +71,10 @@ class TestDrivingLicense(unittest.TestCase):
         # Lista zawierająca elementy niebędące stringami
         with self.assertRaises(ValueError):
             DrivingLicense(
-                "ABC123456", self.today, self.today + timedelta(days=365), ["B", 1]
+                "ABC123456",
+                self.today,
+                self.today + timedelta(days=365),
+                ["B", 1],
             )
 
     def test_is_valid(self):
@@ -86,6 +106,30 @@ class TestDrivingLicense(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             self.license.has_category(123)
+
+    def test_driving_license_with_boundary_dates(self):
+        """Test prawa jazdy z granicznymi datami"""
+        today = date.today()
+
+        # Prawo jazdy wydane i wygasające tego samego dnia
+        # (ale z datą wcześniejszą - powinno rzucić błąd)
+        with self.assertRaises(ValueError):
+            DrivingLicense(
+                license_number="TEST123",
+                issue_date=today,
+                expiry_date=today - timedelta(days=1),
+                categories=["B"],
+            )
+
+        # Prawo jazdy wydane i wygasające tego samego dnia (powinno być ważne)
+        license_same_day = DrivingLicense(
+            license_number="TEST123",
+            issue_date=today,
+            expiry_date=today,
+            categories=["B"],
+        )
+
+        self.assertTrue(license_same_day.is_valid())
 
 
 class TestCustomer(unittest.TestCase):
@@ -244,6 +288,14 @@ class TestCustomer(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.customer.upgrade_category("silver")
 
+    def test_upgrade_category_to_same_level(self):
+        """Test aktualizacji kategorii klienta do tego samego poziomu"""
+        self.assertEqual(self.customer.category, CustomerCategory.STANDARD)
+
+        # Aktualizacja do tej samej kategorii
+        self.customer.upgrade_category(CustomerCategory.STANDARD)
+        self.assertEqual(self.customer.category, CustomerCategory.STANDARD)
+
     def test_add_rental_to_history(self):
         """Test dodawania wypożyczenia do historii klienta"""
         self.assertEqual(len(self.customer.rental_history), 0)
@@ -383,7 +435,9 @@ class TestCustomerRegistry(unittest.TestCase):
         self.registry.register_customer(self.customer2)
         self.registry.register_customer(self.customer3)
 
-        kowalski_customers = self.registry.find_customers_by_last_name("Kowalski")
+        kowalski_customers = self.registry.find_customers_by_last_name(
+            "Kowalski"
+        )
         self.assertEqual(len(kowalski_customers), 2)
         self.assertIn(self.customer1, kowalski_customers)
         self.assertIn(self.customer3, kowalski_customers)
@@ -400,7 +454,9 @@ class TestCustomerRegistry(unittest.TestCase):
         self.assertIn(self.customer3, kowalski_lower)
 
         # Nieistniejące nazwisko
-        nieistniejacy = self.registry.find_customers_by_last_name("Nieistniejący")
+        nieistniejacy = self.registry.find_customers_by_last_name(
+            "Nieistniejący"
+        )
         self.assertEqual(len(nieistniejacy), 0)
 
     def test_get_customers_by_category(self):
@@ -426,7 +482,9 @@ class TestCustomerRegistry(unittest.TestCase):
         self.assertIn(self.customer3, standard_customers)
         self.assertNotIn(self.customer2, standard_customers)
 
-        gold_customers = self.registry.get_customers_by_category(CustomerCategory.GOLD)
+        gold_customers = self.registry.get_customers_by_category(
+            CustomerCategory.GOLD
+        )
         self.assertEqual(len(gold_customers), 1)
         self.assertIn(self.customer2, gold_customers)
 
@@ -449,66 +507,6 @@ class TestCustomerRegistry(unittest.TestCase):
 
         self.registry.remove_customer("CUST001")
         self.assertEqual(self.registry.count_customers(), 2)
-
-
-def test_upgrade_category_to_same_level(self):
-    """Test aktualizacji kategorii klienta do tego samego poziomu"""
-    self.assertEqual(self.customer.category, CustomerCategory.STANDARD)
-
-    # Aktualizacja do tej samej kategorii
-    self.customer.upgrade_category(CustomerCategory.STANDARD)
-    self.assertEqual(self.customer.category, CustomerCategory.STANDARD)
-
-
-def test_driving_license_with_boundary_dates(self):
-    """Test prawa jazdy z granicznymi datami"""
-    today = date.today()
-
-    # Prawo jazdy wydane i wygasające tego samego dnia
-    with self.assertRaises(ValueError):
-        DrivingLicense(
-            license_number="TEST123",
-            issue_date=today,
-            expiry_date=today - timedelta(days=1),
-            categories=["B"],
-        )
-
-    # Prawo jazdy wydane i wygasające tego samego dnia (powinno być ważne)
-    license_same_day = DrivingLicense(
-        license_number="TEST123", issue_date=today, expiry_date=today, categories=["B"]
-    )
-
-    self.assertTrue(license_same_day.is_valid())
-
-
-def test_upgrade_category_to_same_level(self):
-    """Test aktualizacji kategorii klienta do tego samego poziomu"""
-    self.assertEqual(self.customer.category, CustomerCategory.STANDARD)
-
-    # Aktualizacja do tej samej kategorii
-    self.customer.upgrade_category(CustomerCategory.STANDARD)
-    self.assertEqual(self.customer.category, CustomerCategory.STANDARD)
-
-
-def test_driving_license_with_boundary_dates(self):
-    """Test prawa jazdy z granicznymi datami"""
-    today = date.today()
-
-    # Prawo jazdy wydane i wygasające tego samego dnia
-    with self.assertRaises(ValueError):
-        DrivingLicense(
-            license_number="TEST123",
-            issue_date=today,
-            expiry_date=today - timedelta(days=1),
-            categories=["B"],
-        )
-
-    # Prawo jazdy wydane i wygasające tego samego dnia (powinno być ważne)
-    license_same_day = DrivingLicense(
-        license_number="TEST123", issue_date=today, expiry_date=today, categories=["B"]
-    )
-
-    self.assertTrue(license_same_day.is_valid())
 
 
 if __name__ == "__main__":

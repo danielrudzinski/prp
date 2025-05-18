@@ -2,7 +2,12 @@ from datetime import date, timedelta
 
 
 from vehicles import Car, VehicleInventory, VehicleType
-from customers import Customer, CustomerRegistry, DrivingLicense, CustomerCategory
+from customers import (
+    Customer,
+    CustomerRegistry,
+    DrivingLicense,
+    CustomerCategory,
+)
 from rental import RentalManager
 
 
@@ -102,7 +107,10 @@ def main():
 
     # Podnieśmy kategorię jednego klienta
     customer2.upgrade_category(CustomerCategory.GOLD)
-    print(f"Zaktualizowano kategorię klienta {customer2} na {customer2.category.value}")
+    print(
+        f"Zaktualizowano kategorię klienta {customer2}"
+        f" na {customer2.category.value}"
+    )
 
     # Tworzenie wypożyczeń
     print("\n[ Tworzenie wypożyczeń ]")
@@ -135,13 +143,16 @@ def main():
     # Sprawdzanie statusu pojazdów
     print("\n[ Status pojazdów ]")
     print(
-        f"Pojazd {vehicle1.registration_number} jest dostępny: {vehicle1.is_available()}"
+        f"Pojazd {vehicle1.registration_number} jest "
+        f"dostępny: {vehicle1.is_available()}"
     )
     print(
-        f"Pojazd {vehicle2.registration_number} jest dostępny: {vehicle2.is_available()}"
+        f"Pojazd {vehicle2.registration_number} jest "
+        f"dostępny: {vehicle2.is_available()}"
     )
     print(
-        f"Pojazd {vehicle3.registration_number} jest dostępny: {vehicle3.is_available()}"
+        f"Pojazd {vehicle3.registration_number} jest"
+        f" dostępny: {vehicle3.is_available()}"
     )
 
     # Lista aktywnych wypożyczeń
@@ -154,7 +165,9 @@ def main():
     print("\n[ Zwrot pojazdu ]")
     try:
         return_date = today + timedelta(days=2)
-        total_cost = rental_manager.complete_rental(rental1.rental_id, return_date)
+        total_cost = rental_manager.complete_rental(
+            rental1.rental_id, return_date
+        )
         review = rental_manager.add_review(
             rental_id=rental1.rental_id,
             rating=5,
@@ -163,7 +176,8 @@ def main():
         )
         print(f"Dodano opinię: {review}")
         print(
-            f"Zakończono wypożyczenie {rental1.rental_id}. Całkowity koszt: {total_cost} PLN"
+            f"Zakończono wypożyczenie {rental1.rental_id}."
+            f" Całkowity koszt: {total_cost} PLN"
         )
     except Exception as e:
         print(f"Błąd podczas zwrotu pojazdu: {e}")
@@ -179,10 +193,12 @@ def main():
     # Sprawdzanie statusu pojazdów po zakończeniu/anulowaniu
     print("\n[ Status pojazdów po zwrocie/anulowaniu ]")
     print(
-        f"Pojazd {vehicle1.registration_number} jest dostępny: {vehicle1.is_available()}"
+        f"Pojazd {vehicle1.registration_number} jest"
+        f" dostępny: {vehicle1.is_available()}"
     )
     print(
-        f"Pojazd {vehicle2.registration_number} jest dostępny: {vehicle2.is_available()}"
+        f"Pojazd {vehicle2.registration_number} jest "
+        f"dostępny: {vehicle2.is_available()}"
     )
 
     # Generowanie raportu
@@ -191,7 +207,9 @@ def main():
     report_end = today + timedelta(days=7)
     report = rental_manager.generate_rental_report(report_start, report_end)
 
-    print(f"Raport za okres: {report['period_start']} - {report['period_end']}")
+    print(
+        f"Raport za okres: {report['period_start']} - {report['period_end']}"
+    )
     print(f"Łączna liczba wypożyczeń: {report['total_rentals']}")
     print(f"Zakończone wypożyczenia: {report['completed_rentals']}")
     print(f"Aktywne wypożyczenia: {report['active_rentals']}")
@@ -199,13 +217,18 @@ def main():
     print(f"Przeterminowane wypożyczenia: {report['overdue_rentals']}")
     print(f"Łączny przychód: {report['total_revenue']} PLN")
     print(
-        f"Średni czas trwania wypożyczenia: {report['average_rental_duration']:.1f} dni"
+        f"Średni czas trwania wypożyczenia:"
+        f"{report['average_rental_duration']:.1f} dni"
     )
     print("\n[ Oceny klientów ]")
     for customer in [customer1, customer2]:
-        avg = rental_manager.get_average_rating_for_customer(customer.customer_id)
+        avg = rental_manager.get_average_rating_for_customer(
+            customer.customer_id
+        )
         print(f"{customer.full_name()}: Średnia ocena: {avg:.1f}/5")
-        reviews = rental_manager.get_reviews_for_customer(customer.customer_id)
+        reviews = rental_manager.get_reviews_for_customer(
+            customer.customer_id
+        )
         for r in reviews:
             print(f" - {r}")
 
